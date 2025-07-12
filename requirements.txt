@@ -9,5 +9,6 @@ dill
 pyaml
 ipykernel
 mlflow
+dagshub
 
 #-e .
