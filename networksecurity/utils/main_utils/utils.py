@@ -6,6 +6,10 @@ import numpy as np
 import dill 
 import pickle
 
+from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
+
+
 def read_yaml_file(file_path: str) -> dict:
     try:
         with open(file_path, "rb") as yaml_file:
@@ -53,6 +57,58 @@ def save_object(file_path: str, obj: object) -> None:
             pickle.dump(obj, file_obj)
 
         logging.info("Exited save_object method of MainUtils Class")
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+    
+
+
+def load_object(file_path: str) -> object:
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The file: {file_path} is not exists")
+        with open(file_path, "rb") as file_obj:
+            print(file_obj)
+            return pickle.load(file_obj)
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+    
+
+
+def load_numpy_array(file_path: str) -> np.array:
+    try:
+        with open(file_path, "rb") as file_obj:
+            return np.load(file_obj)
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+
+
+def evaluate_models(X_train, y_train, X_test, y_test, models, param):
+    try:
+        report = {}
+
+        for i in range(len(list(models))):
+            model = list(models.values())[i]
+            model_name = list(models.keys())[i]
+            param_grid = param[model_name]  # Use a new variable name
+
+            gs = GridSearchCV(model, param_grid, cv=3)
+            gs.fit(X_train, y_train)
+
+            model.set_params(**gs.best_params_)
+            model.fit(X_train, y_train)
+
+            y_train_pred = model.predict(X_train)
+            y_test_pred = model.predict(X_test)
+
+            train_model_score = r2_score(y_train, y_train_pred)
+            test_model_score = r2_score(y_test, y_test_pred)
+
+            report[model_name] = test_model_score
+
+        return report
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
