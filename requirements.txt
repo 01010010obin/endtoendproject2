@@ -10,5 +10,7 @@ pyaml
 ipykernel
 mlflow
 dagshub
+fastapi
+uvicorn
 
 #-e .

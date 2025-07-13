@@ -129,8 +129,6 @@ class ModelTrainer:
         classification_test_metric = get_classification_score(y_true = y_test, y_pred = y_test_pred)
 
 
-
-
         preprocessor = load_object(file_path = self.data_transformation_artifact.transformed_object_file_path)
 
         model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
@@ -140,6 +138,7 @@ class ModelTrainer:
 
         save_object(self.model_trainer_config.trained_model_file_path, obj = NetworkModel)
 
+        save_object("final_model/model.pkl", best_model)
 
         model_trainer_artifact = ModelTrainerArtifact(trained_model_file_path = self.model_trainer_config.trained_model_file_path,
                              train_metric_artifact = classification_train_metric,
